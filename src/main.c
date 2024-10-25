@@ -22,6 +22,9 @@ void editorProcessKeyPress();
 /*** terminal ***/
 
 void die(const char *s) {
+  write(STDOUT_FILENO, "\x1b[2J", 4);
+  write(STDOUT_FILENO, "\x1b[H", 3);
+
   perror(s);
   exit(1);
 }
@@ -55,7 +58,10 @@ void enableRawMode() {
 
 /*** output ***/
 
-void editorRefreshScreen() { write(STDOUT_FILENO, "\x1b[2J", 4); }
+void editorRefreshScreen() {
+  write(STDOUT_FILENO, "\x1b[2J", 4);
+  write(STDOUT_FILENO, "\x1b[H", 3);
+}
 
 /*** input ***/
 
@@ -77,6 +83,9 @@ void editorProcessKeyPress() {
 
   switch (c) {
   case 'q':
+    write(STDOUT_FILENO, "\x1b[2J", 4);
+    write(STDOUT_FILENO, "\x1b[H", 3);
+
     exit(0);
     break;
   }
