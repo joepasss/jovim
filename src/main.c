@@ -4,14 +4,22 @@
 #include <termios.h>
 #include <unistd.h>
 
+/*** defines ***/
+#define CTRL_KEY(k) ((k) & 0x1f)
+
 struct termios orig_termios;
 
 /*** prototypes ***/
 void die(const char *s);
 void enableRawMode();
 void disableRawMode();
+void editorRefreshScreen();
+char editorReadKey();
+void editorProcessKeyPress();
 
 /*** implements ***/
+
+/*** terminal ***/
 
 void die(const char *s) {
   perror(s);
@@ -45,19 +53,41 @@ void enableRawMode() {
   }
 }
 
+/*** output ***/
+
+void editorRefreshScreen() { write(STDOUT_FILENO, "\x1b[2J", 4); }
+
+/*** input ***/
+
+char editorReadKey() {
+  int nread;
+  char c;
+
+  while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
+    if (nread == -1 && errno != EAGAIN) {
+      die("read");
+    }
+  }
+
+  return c;
+}
+
+void editorProcessKeyPress() {
+  char c = editorReadKey();
+
+  switch (c) {
+  case 'q':
+    exit(0);
+    break;
+  }
+}
+
 int main() {
   enableRawMode();
 
-  char c;
-
   while (1) {
-    if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) {
-      die("read");
-    }
-
-    if (c == 'q') {
-      break;
-    }
+    editorRefreshScreen();
+    editorProcessKeyPress();
   }
 
   return 0;
