@@ -16,6 +16,9 @@
 #endif
 
 /*** defines ***/
+#define JOVIM_VERSION "0.0.1"
+#define JOVIM_WELCOME_ROW_LENGTH 5
+
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define ABUF_INIT {NULL, 0}
 
@@ -43,6 +46,9 @@ void abFree(struct abuf *ab);
 /* output */
 void editorRefreshScreen();
 void editorDrawRows(struct abuf *ab);
+void welcomeMessage(struct abuf *ab);
+void authorMessage(struct abuf *ab);
+void helpMessage(struct abuf *ab);
 
 /* input */
 char editorReadKey();

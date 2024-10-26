@@ -1,5 +1,4 @@
 #include "jovim.h"
-#include <unistd.h>
 
 struct editorConfig E;
 
@@ -86,15 +85,75 @@ void editorRefreshScreen() {
 
 void editorDrawRows(struct abuf *ab) {
   int y;
+  int welcomeRow = (E.screenrows - JOVIM_WELCOME_ROW_LENGTH) / 2;
+  int authorRow = welcomeRow + 2;
+  int helpRow = welcomeRow + 4;
 
   for (y = 0; y < E.screenrows; y++) {
-    abAppend(ab, "~", 1);
-    abAppend(ab, "\x1b[K", 3);
+    if (y == welcomeRow) {
+      welcomeMessage(ab);
+    } else if (y == authorRow) {
+      authorMessage(ab);
+    } else if (y == helpRow) {
+      helpMessage(ab);
+    } else {
+      abAppend(ab, "~", 1);
+      abAppend(ab, "\x1b[K", 3);
+    }
 
-    if (y < E.screenrows - 1) {
+    if (y < E.screencols - 1) {
       abAppend(ab, "\r\n", 2);
     }
   }
+}
+
+void centerText(struct abuf *ab, char *str, int strlen) {
+  int padding = (E.screencols - strlen) / 2;
+
+  if (padding) {
+    abAppend(ab, "~", 1);
+    padding--;
+  }
+
+  while (padding--) {
+    abAppend(ab, " ", 1);
+  }
+
+  abAppend(ab, str, strlen);
+}
+
+void welcomeMessage(struct abuf *ab) {
+  char welcome[80];
+  int welcomelen =
+      snprintf(welcome, sizeof(welcome), "JOVIM v%s", JOVIM_VERSION);
+
+  if (welcomelen > E.screencols) {
+    welcomelen = E.screencols;
+  }
+
+  centerText(ab, welcome, welcomelen);
+}
+
+void authorMessage(struct abuf *ab) {
+  char author[80];
+  int authorlen = snprintf(author, sizeof(author), "by JOEPASSS");
+
+  if (authorlen > E.screencols) {
+    authorlen = E.screencols;
+  }
+
+  centerText(ab, author, authorlen);
+}
+
+void helpMessage(struct abuf *ab) {
+  char help[80];
+  int helplen = snprintf(help, sizeof(help), "type  q       to exit");
+
+  if (helplen > E.screencols) {
+    helplen = E.screencols;
+  }
+
+  centerText(ab, help, helplen);
 }
 
 /*** input ***/
