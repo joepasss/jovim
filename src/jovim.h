@@ -2,9 +2,33 @@
 #define JOVIM_H
 
 /*** include ***/
+#ifndef JOVIM_INCLUDE
+#define JOVIM_INCLUDE
+
+#include <termios.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+
+#endif
 
 /*** defines ***/
 #define CTRL_KEY(k) ((k) & 0x1f)
+#define ABUF_INIT {NULL, 0}
+
+struct editorConfig {
+  int screenrows;
+  int screencols;
+  struct termios orig_termios;
+};
+
+struct abuf {
+  char *b;
+  int len;
+};
 
 /*** prototypes ***/
 
@@ -13,10 +37,12 @@ void die(const char *s);
 void enableRawMode();
 void disableRawMode();
 int getWindowSize(int *rows, int *cols);
+void abAppend(struct abuf *ab, const char *s, int len);
+void abFree(struct abuf *ab);
 
 /* output */
 void editorRefreshScreen();
-void editorDrawRows();
+void editorDrawRows(struct abuf *ab);
 
 /* input */
 char editorReadKey();
