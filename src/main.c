@@ -1,4 +1,5 @@
 #include "jovim.h"
+#include <unistd.h>
 
 struct editorConfig E;
 
@@ -76,7 +77,11 @@ void editorRefreshScreen() {
 
   editorDrawRows(&ab);
 
-  abAppend(&ab, "\x1b[H", 3);
+  char buf[32];
+
+  snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
+
+  abAppend(&ab, buf, strlen(buf));
   abAppend(&ab, "\x1b[?25h", 6);
 
   write(STDOUT_FILENO, ab.b, ab.len);
@@ -98,10 +103,11 @@ void editorDrawRows(struct abuf *ab) {
       helpMessage(ab);
     } else {
       abAppend(ab, "~", 1);
-      abAppend(ab, "\x1b[K", 3);
     }
 
-    if (y < E.screencols - 1) {
+    abAppend(ab, "\x1b[K", 3);
+
+    if (y < E.screenrows - 1) {
       abAppend(ab, "\r\n", 2);
     }
   }
@@ -158,7 +164,7 @@ void helpMessage(struct abuf *ab) {
 
 /*** input ***/
 
-char editorReadKey() {
+int editorReadKey() {
   int nread;
   char c;
 
@@ -168,11 +174,38 @@ char editorReadKey() {
     }
   }
 
-  return c;
+  if (c == '\x1b') {
+    char seq[3];
+
+    if (read(STDIN_FILENO, &seq[0], 1) != 1) {
+      return '\x1b';
+    }
+
+    if (read(STDIN_FILENO, &seq[1], 1) != 1) {
+      return '\x1b';
+    }
+
+    if (seq[0] == '[') {
+      switch (seq[1]) {
+      case 'A':
+        return ARROW_UP;
+      case 'B':
+        return ARROW_DOWN;
+      case 'C':
+        return ARROW_RIGHT;
+      case 'D':
+        return ARROW_LEFT;
+      }
+    }
+
+    return '\x1b';
+  } else {
+    return c;
+  }
 }
 
 void editorProcessKeyPress() {
-  char c = editorReadKey();
+  int c = editorReadKey();
 
   switch (c) {
   case 'q':
@@ -181,6 +214,38 @@ void editorProcessKeyPress() {
 
     exit(0);
     break;
+
+  case ARROW_LEFT:
+  case ARROW_RIGHT:
+  case ARROW_UP:
+  case ARROW_DOWN:
+    editorMoveCursor(c);
+    break;
+  }
+}
+
+void editorMoveCursor(int key) {
+  switch (key) {
+  case ARROW_LEFT:
+    if (E.cx != 0) {
+      E.cx--;
+    }
+    break;
+  case ARROW_RIGHT:
+    if (E.cx != E.screencols - 1) {
+      E.cx++;
+    }
+    break;
+  case ARROW_UP:
+    if (E.cy != 0) {
+      E.cy--;
+    }
+    break;
+  case ARROW_DOWN:
+    if (E.cy != E.screenrows - 1) {
+      E.cy++;
+    }
+    break;
   }
 }
 
@@ -188,6 +253,9 @@ int main() {
   enableRawMode();
 
   // init
+  E.cx = 0;
+  E.cy = 0;
+
   if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
     die("getWindowSize");
   }

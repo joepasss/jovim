@@ -22,7 +22,15 @@
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define ABUF_INIT {NULL, 0}
 
+enum editorKey {
+  ARROW_LEFT = 1000,
+  ARROW_RIGHT,
+  ARROW_UP,
+  ARROW_DOWN
+};
+
 struct editorConfig {
+  int cx, cy;
   int screenrows;
   int screencols;
   struct termios orig_termios;
@@ -51,7 +59,8 @@ void authorMessage(struct abuf *ab);
 void helpMessage(struct abuf *ab);
 
 /* input */
-char editorReadKey();
+int editorReadKey();
 void editorProcessKeyPress();
+void editorMoveCursor(int key);
 
 #endif
