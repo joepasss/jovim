@@ -1,13 +1,15 @@
 BUILD_DIR = ./build
 TARGET = $(BUILD_DIR)/jovim
+TARGET_FILES = ./src/main.c ./src/jovim_error.c
+TARGET_HEADERS = ./src/common.h ./src/jovim.h ./src/jovim_error.h
 
-$(TARGET): ./src/main.c | $(BUILD_DIR)
-	$(CC) ./src/main.c -o $(TARGET) -Wall -Wextra -pedantic -std=c99
+$(TARGET): $(TARGET_FILES) | $(BUILD_DIR)
+	$(CC) $(TARGET_FILES) -o $(TARGET) -Wall -Wextra -pedantic -std=c99
 
 $(BUILD_DIR):
 	mkdir -pv $(BUILD_DIR)
 
-%.o: %.c jovim.h common.h fileio.c fileio.h
+%.o: %.c $(TARGET_HEADERS)
 	$(CC) $(CFLAGS) -c $<
 
 clean:
