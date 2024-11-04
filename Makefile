@@ -7,7 +7,7 @@ $(TARGET): ./src/main.c | $(BUILD_DIR)
 $(BUILD_DIR):
 	mkdir -pv $(BUILD_DIR)
 
-%.o: %.c jovim.h
+%.o: %.c jovim.h common.h fileio.c fileio.h
 	$(CC) $(CFLAGS) -c $<
 
 clean:
