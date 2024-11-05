@@ -1,7 +1,18 @@
 BUILD_DIR = ./build
 TARGET = $(BUILD_DIR)/jovim
-TARGET_FILES = ./src/main.c ./src/jovim_error.c
-TARGET_HEADERS = ./src/common.h ./src/jovim.h ./src/jovim_error.h
+
+TARGET_FILES = \
+							 ./src/main.c \
+							 ./src/jovim_error.c \
+							 ./src/input.c \
+							 ./src/output.c
+
+TARGET_HEADERS = \
+								 ./src/common.h \
+								 ./src/jovim.h \
+								 ./src/jovim_error.h \
+								 ./src/input.h \
+								 ./src/output.h
 
 $(TARGET): $(TARGET_FILES) | $(BUILD_DIR)
 	$(CC) $(TARGET_FILES) -o $(TARGET) -Wall -Wextra -pedantic -std=c99
