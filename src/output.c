@@ -1,5 +1,6 @@
 #include "output.h"
 #include "jovim.h"
+#include "welcome.h"
 
 void editorRefreshScreen(struct editorConfig *E) {
   struct abuf ab = ABUF_INIT;
@@ -7,7 +8,7 @@ void editorRefreshScreen(struct editorConfig *E) {
   abAppend(&ab, "\x1b[?25l", 6);
   abAppend(&ab, "\x1b[H", 3);
 
-  editorDrawRows(&ab, E->screenrows);
+  editorDrawRows(&ab, E->screenrows, E->screencols);
 
   abAppend(&ab, "\x1b[H", 3);
   abAppend(&ab, "\x1b[?25h", 6);
@@ -16,11 +17,17 @@ void editorRefreshScreen(struct editorConfig *E) {
   abFree(&ab);
 }
 
-void editorDrawRows(struct abuf *ab, int rows) {
+void editorDrawRows(struct abuf *ab, int rows, int cols) {
   int y;
 
   for (y = 0; y < rows; y++) {
-    abAppend(ab, "~", 1);
+
+    if (y == rows / 3) {
+      welcomeMessage(ab, cols);
+    } else {
+      abAppend(ab, "~", 1);
+    }
+
     abAppend(ab, "\x1b[K", 3);
 
     if (y < rows - 1) {

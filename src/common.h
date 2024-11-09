@@ -22,4 +22,6 @@ struct abuf {
 
 #define ABUF_INIT {NULL, 0}
 
+#define JOVIM_VERSION "0.0.1"
+
 #endif
