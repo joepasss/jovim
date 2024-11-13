@@ -48,6 +48,9 @@ void abAppend(struct abuf *ab, const char *s, int len) {
 void abFree(struct abuf *ab) { free(ab->b); }
 
 void initEditor() {
+  E.cx = 0;
+  E.cy = 0;
+
   if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
     die("getWindowSize");
   }
@@ -58,8 +61,8 @@ int main() {
   initEditor();
 
   while (1) {
-    editorRefreshScreen(&E);
-    editorProcessKeyPress();
+    editorRefreshScreen(E);
+    editorProcessKeyPress(&E);
   }
 
   return 0;

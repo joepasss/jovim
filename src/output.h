@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-void editorRefreshScreen(struct editorConfig *E);
+void editorRefreshScreen(struct editorConfig E);
 void editorDrawRows(struct abuf *ab, int rows, int cols);
 int getWindowSize(int *rows, int *cols);
 

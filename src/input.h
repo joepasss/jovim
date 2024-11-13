@@ -5,7 +5,17 @@
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
-char editorReadKey();
-void editorProcessKeyPress();
+enum editorKey {
+  ARROW_LEFT = 1000,
+  ARROW_RIGHT,
+  ARROW_UP,
+  ARROW_DOWN,
+  PAGE_UP,
+  PAGE_DOWN
+};
+
+int editorReadKey();
+void editorMoveCursor(int key, struct editorConfig *E);
+void editorProcessKeyPress(struct editorConfig *E);
 
 #endif
