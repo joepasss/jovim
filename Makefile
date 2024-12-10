@@ -6,7 +6,8 @@ TARGET_FILES = \
 							 ./src/jovim_error.c \
 							 ./src/input.c \
 							 ./src/output.c \
-							 ./src/welcome.c
+							 ./src/welcome.c \
+							 ./src/fileio.c
 
 TARGET_HEADERS = \
 								 ./src/common.h \
@@ -14,7 +15,8 @@ TARGET_HEADERS = \
 								 ./src/jovim_error.h \
 								 ./src/input.h \
 								 ./src/output.h \
-								 ./src/welcome.h
+								 ./src/welcome.h \
+								 ./src/fileio.h
 
 $(TARGET): $(TARGET_FILES) | $(BUILD_DIR)
 	$(CC) $(TARGET_FILES) -o $(TARGET) -Wall -Wextra -pedantic -std=c99

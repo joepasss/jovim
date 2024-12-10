@@ -8,7 +8,7 @@ void editorRefreshScreen(struct editorConfig E) {
   abAppend(&ab, "\x1b[?25l", 6);
   abAppend(&ab, "\x1b[H", 3);
 
-  editorDrawRows(&ab, E.screenrows, E.screencols);
+  editorDrawRows(&ab, E);
 
   char buf[32];
   snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
@@ -20,20 +20,29 @@ void editorRefreshScreen(struct editorConfig E) {
   abFree(&ab);
 }
 
-void editorDrawRows(struct abuf *ab, int rows, int cols) {
+void editorDrawRows(struct abuf *ab, struct editorConfig E) {
   int y;
 
-  for (y = 0; y < rows; y++) {
-
-    if (y == rows / 3) {
-      welcomeMessage(ab, cols);
+  for (y = 0; y < E.screenrows; y++) {
+    if (y >= E.numrows) {
+      if (E.numrows == 0 && y == E.screenrows / 3) {
+        welcomeMessage(ab, E.screencols);
+      } else {
+        abAppend(ab, "~", 1);
+      }
     } else {
-      abAppend(ab, "~", 1);
+      int len = E.row.size;
+
+      if (len > E.screencols) {
+        len = E.screencols;
+      }
+
+      abAppend(ab, E.row.chars, len);
     }
 
     abAppend(ab, "\x1b[K", 3);
 
-    if (y < rows - 1) {
+    if (y < E.screenrows - 1) {
       abAppend(ab, "\r\n", 2);
     }
   }

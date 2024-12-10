@@ -8,11 +8,21 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <string.h>
+#include <sys/types.h>
+
+#define _BSD_SOURCE
+
+typedef struct erow {
+  int size;
+  char *chars;
+} erow;
 
 struct editorConfig {
   int cx, cy;
   int screenrows;
   int screencols;
+  int numrows;
+  erow row;
   struct termios orig_termios;
 };
 

@@ -1,3 +1,4 @@
+#include "fileio.h"
 #include "input.h"
 #include "jovim.h"
 #include "jovim_error.h"
@@ -56,9 +57,13 @@ void initEditor() {
   }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
   enableRawMode();
   initEditor();
+
+  if (argc >= 2) {
+    editorOpen(&E, argv[1]);
+  }
 
   while (1) {
     editorRefreshScreen(E);
